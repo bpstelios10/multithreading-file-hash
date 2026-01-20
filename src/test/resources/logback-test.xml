@@ -6,7 +6,9 @@
         </encoder>
     </appender>
 
-    <root level="DEBUG">
+    <logger name="org.learnings.filehash" level="DEBUG"/>
+
+    <root level="INFO">
         <appender-ref ref="STDOUT" />
     </root>
 
