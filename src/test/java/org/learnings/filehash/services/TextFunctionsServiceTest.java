@@ -20,7 +20,7 @@ class TextFunctionsServiceTest {
 
     @BeforeEach
     void setUp() {
-        textFunctionsServiceLogs = getListAppenderForClass(TextFunctionsService.class);
+        textFunctionsServiceLogs = getListAppenderForClass(HashingUtils.class);
     }
 
     @Test
@@ -44,6 +44,11 @@ class TextFunctionsServiceTest {
         System.out.println("---- results of tests ----");
         System.out.println(sentencesHashes);
         assertThat(sentencesHashes).hasSize(4);
+        assertThat(sentencesHashes.get(0)).isEqualTo("1dfcea248091114a437e747de8a21e69a99e060b7768c033a4d5881ac73560da");
+        assertThat(sentencesHashes.get(1)).isEqualTo("9cc4c653fdcb6f2eb0a03982675ec9187fc69687823e786fcb4088427dde1e2e");
+        assertThat(sentencesHashes.get(2)).isEqualTo("ba3fe787b5f7466de1e0859ff85b70adbd216ab06c517623e6e03fd7a5fc2a64");
+        assertThat(sentencesHashes.get(3)).isEqualTo("18088be579f248cd0d336f13a6b2dc0fd15b3b4d835529e1a6b3206e3fee7405");
+
         assertContainsInLogs(textFunctionsServiceLogs,
                 "lets see if MESSAGE_DIGEST is same inside the thread",
                 Level.DEBUG);

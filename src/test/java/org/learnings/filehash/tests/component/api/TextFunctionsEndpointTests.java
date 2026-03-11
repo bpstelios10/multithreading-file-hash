@@ -52,6 +52,10 @@ public class TextFunctionsEndpointTests {
                 .getContentAsString();
 
         // returns a map of 4 sentences:
-        assertThat(responseBody).contains("\"0\":\"").contains("\"1\":\"").contains("\"2\":\"").contains("\"3\":\"");
+        assertThat(responseBody)
+                .contains("{\"0\":\"1dfcea248091114a437e747de8a21e69a99e060b7768c033a4d5881ac73560da\"," +
+                          "\"1\":\"9cc4c653fdcb6f2eb0a03982675ec9187fc69687823e786fcb4088427dde1e2e\"," +
+                          "\"2\":\"ba3fe787b5f7466de1e0859ff85b70adbd216ab06c517623e6e03fd7a5fc2a64\"," +
+                          "\"3\":\"18088be579f248cd0d336f13a6b2dc0fd15b3b4d835529e1a6b3206e3fee7405\"}");
     }
 }
