@@ -11,7 +11,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 @Slf4j
 public final class HashingUtils {
 
-    private HashingUtils() {}
+    private HashingUtils() { }
 
     private static final String SECURITY_ALGORITHM = "SHA-256";
     // MessageDigest is probably a heavy-to-construct object, so we won't construct it inside getSentencesHashes().
