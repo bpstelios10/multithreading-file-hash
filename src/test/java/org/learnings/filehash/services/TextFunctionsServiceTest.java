@@ -18,6 +18,21 @@ class TextFunctionsServiceTest {
     private final TextFunctionsService service = new TextFunctionsService();
     private ListAppender<ILoggingEvent> textFunctionsServiceLogs;
 
+    private static final String TEST_TEXT = """
+            No man is an island,
+            Entire of itself,
+            Every man is a piece of the continent,
+            A part of the main.
+            If a clod be washed away by the sea,
+            Europe is the less.
+            As well as if a promontory were.
+            As well as if a manor of thy friend’s
+            Or of thine own were:
+            Any man’s death diminishes me,
+            Because I am involved in mankind,
+            And therefore never send to know for whom the bell tolls;
+            It tolls for thee.""";
+
     @BeforeEach
     void setUp() {
         textFunctionsServiceLogs = getListAppenderForClass(HashingUtils.class);
@@ -25,21 +40,7 @@ class TextFunctionsServiceTest {
 
     @Test
     void extractSentencesHashes_returnsIndexedSentencesHashes() {
-        String text = """
-                No man is an island,
-                Entire of itself,
-                Every man is a piece of the continent,
-                A part of the main.
-                If a clod be washed away by the sea,
-                Europe is the less.
-                As well as if a promontory were.
-                As well as if a manor of thy friend’s
-                Or of thine own were:
-                Any man’s death diminishes me,
-                Because I am involved in mankind,
-                And therefore never send to know for whom the bell tolls;
-                It tolls for thee.""";
-        Map<Integer, String> sentencesHashes = service.extractSentencesHashes(new Text(text));
+        Map<Integer, String> sentencesHashes = service.extractSentencesHashes(new Text(TEST_TEXT));
 
         System.out.println("---- results of tests ----");
         System.out.println(sentencesHashes);
@@ -57,11 +58,57 @@ class TextFunctionsServiceTest {
         // thread names and MessageDigest hashes we logged in DEBUG
         Set<String> threadsNamesAndMessageDigestInstancesLogs =
                 getThreadsNamesAndMessageDigestInstancesLogs(textFunctionsServiceLogs,
-                "lets see if MESSAGE_DIGEST is same inside the thread", Level.DEBUG);
+                        "lets see if MESSAGE_DIGEST is same inside the thread", Level.DEBUG);
         System.out.println("threadsNamesAndMessageDigestInstancesLogs: " + threadsNamesAndMessageDigestInstancesLogs);
         assertThat(threadsNamesAndMessageDigestInstancesLogs)
                 .anyMatch(l -> l.contains("-thread-1"))
                 .anyMatch(l -> l.contains("-thread-2"));
         assertThat(threadsNamesAndMessageDigestInstancesLogs).hasSize(4);
+    }
+
+    @Test
+    public void countWordsPerSentence() {
+        Map<Integer, Integer> wordsPerSentence = service.countWordsPerSentence(new Text(TEST_TEXT));
+
+        assertThat(wordsPerSentence).hasSize(4);
+        assertThat(wordsPerSentence.get(0)).isEqualTo(21);
+        assertThat(wordsPerSentence.get(1)).isEqualTo(13);
+        assertThat(wordsPerSentence.get(2)).isEqualTo(7);
+        assertThat(wordsPerSentence.get(3)).isEqualTo(40);
+    }
+
+    @Test
+    public void countWords() {
+        int worldsInText = service.countWords(new Text(TEST_TEXT));
+
+        assertThat(worldsInText).isEqualTo(81);
+    }
+
+    @Test
+    public void countWordsParallelStream() {
+        int worldsInText = service.countWordsParallelStream(new Text(TEST_TEXT));
+
+        assertThat(worldsInText).isEqualTo(81);
+    }
+
+    @Test
+    public void getMostCommonWord() {
+        String mostCommonWord = service.getMostCommonWord(new Text(TEST_TEXT));
+
+        assertThat(mostCommonWord).isEqualTo("of");
+    }
+
+    @Test
+    public void getMostCommonWordImproved() {
+        String mostCommonWord = service.getMostCommonWordImproved(new Text(TEST_TEXT));
+
+        assertThat(mostCommonWord).isEqualTo("of");
+    }
+
+    @Test
+    public void getMostCommonWordParallelStream() {
+        String mostCommonWord = service.getMostCommonWordParallelStream(new Text(TEST_TEXT));
+
+        assertThat(mostCommonWord).isEqualTo("of");
     }
 }
