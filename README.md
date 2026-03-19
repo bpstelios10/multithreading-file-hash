@@ -85,6 +85,36 @@ java multithreading exercise:
 
 ---
 
+### Locking
+
+Locks (specifically from the java.util.concurrent.locks package) are considered the more modern and flexible alternative
+to synchronized blocks. They offer
+
+1) fairness: can configure to first-comes first-served
+2) tryLock(): try to acquire lock and if it is not available then the thread can do something else or wait for X time
+3) memory visibility: before lock is released, the changes are flushed to main memory & are available for other threads
+4) optimistic locking: generally locks & synchronized blocks lock first, but there are some locks that don't, so they
+   improve performance
+
+Most common locks:
+
+* ReentrantLock: A flexible, exclusive lock that allows a single thread to hold a resource, supporting features like
+  fairness and timeouts. (modern way for Synchronized blocks)
+  Use case: Protecting a shared resource where you need to prevent "deadlocks" or handle high-contention logic.
+
+* ReentrantReadWriteLock: A dual-lock system that allows multiple readers simultaneously but only one writer at a time.
+  The readers are still using a lock, but they all share the 1. There is another one lock for writing.
+  Use case: A shared Cache or Configuration object where reads happen much more often than updates.
+
+* StampedLock: An advanced lock that supports Optimistic Reading, allowing readers to grab data without blocking writers
+  at all. Here, there are NO LOCKS used! So much better performance than ReentrantReadWriteLock.
+  Use case: High-performance systems (like Exchange Engines) where you cannot afford to have readers slow down writers.
+
+* Semaphore: A "counter-based" lock that limits access to a fixed number of N threads rather than just one.
+  Use case: Throttling access to a limited pool of resources, such as a Database Connection Pool or an external API.
+
+---
+
 ### Atomic Variables
 
 * Atomics are used for Compare-And-Swap (CAS) operations, which ensures the entire sequence happens as a single,

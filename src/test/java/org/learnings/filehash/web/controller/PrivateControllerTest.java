@@ -26,6 +26,7 @@ class PrivateControllerTest {
     @BeforeEach
     void setup() {
         when(requestsCounterFilter.getTotalRequestsReceived()).thenReturn(new AtomicLong());
+        when(requestsCounterFilter.getPublicRequests()).thenReturn(0L);
     }
 
     @Test
@@ -35,6 +36,7 @@ class PrivateControllerTest {
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody())
                 .contains("\"status\": \"OK\",")
-                .contains("\"total requests\": \"");
+                .contains("\"total requests\": \"0\",")
+                .contains("\"non-private requests\": \"0\"");
     }
 }
