@@ -29,7 +29,8 @@ public class PrivateEndpointTests {
         mockMvc.perform(get("/private/status"))
                 .andExpect(status().isOk())
                 .andExpect(content().string(Matchers.containsString("\"status\": \"OK\",")))
-                .andExpect(content().string(Matchers.containsString("\"total requests\": \"")));
+                .andExpect(content().string(Matchers.containsString("\"total requests\": \"")))
+                .andExpect(content().string(Matchers.containsString("\"non-private requests\": \"")));
     }
 
     @Test

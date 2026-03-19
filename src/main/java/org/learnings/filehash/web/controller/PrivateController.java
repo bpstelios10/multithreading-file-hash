@@ -25,9 +25,11 @@ public class PrivateController {
         String responseText = """
                 {
                   "status": "OK",
-                  "total requests": "%d"
+                  "total requests": "%,d",
+                  "non-private requests": "%,d"
                 }""";
 
-        return ResponseEntity.ok(responseText.formatted(requestsCounterFilter.getTotalRequestsReceived().get()));
+        return ResponseEntity.ok(responseText.formatted(requestsCounterFilter.getTotalRequestsReceived().get(),
+                requestsCounterFilter.getPublicRequests()));
     }
 }
