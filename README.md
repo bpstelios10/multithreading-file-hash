@@ -1,8 +1,11 @@
 # multithreading-file-hash
+
 java multithreading exercise:
+
 * one endpoint accepts a text and returns a map of the sentence index and its hash
 * uses `ExecutorService` with 2 threads for parallel computation (not configurable yet) - `newFixedThreadPool(2)`
-* uses `ThreadLocal` so that each thread keeps its own `MessageDigest`. one instance would result into wrong functionality.
+* uses `ThreadLocal` so that each thread keeps its own `MessageDigest`. one instance would result into wrong
+  functionality.
   as many instances as sentences would consume resources, cause MessageDigest is a heavy-to-build object.
 
 ---
@@ -19,9 +22,9 @@ java multithreading exercise:
 
 * **CompletableFuture**
 
-  * async task composition (`thenApply`, `thenCombine`, etc.)
-  * non-blocking pipelines
-  * `join()` vs `get()`
+    * async task composition (`thenApply`, `thenCombine`, etc.)
+    * non-blocking pipelines
+    * `join()` vs `get()`
 * **Async vs Parallel thinking** → chaining vs splitting work
 
 ---
@@ -30,11 +33,11 @@ java multithreading exercise:
 
 * **Parallel Streams**
 
-  * implicit ForkJoinPool usage
-  * data parallelism with minimal code
+    * implicit ForkJoinPool usage
+    * data parallelism with minimal code
 * **Manual parallel decomposition**
 
-  * splitting text → processing chunks independently
+    * splitting text → processing chunks independently
 
 ---
 
@@ -58,8 +61,8 @@ java multithreading exercise:
 
 * **ThreadLocal**
 
-  * avoiding shared mutable state
-  * per-thread reuse of expensive objects (`MessageDigest`)
+    * avoiding shared mutable state
+    * per-thread reuse of expensive objects (`MessageDigest`)
 
 ---
 
@@ -68,9 +71,9 @@ java multithreading exercise:
 * Splitting work → mapping → reducing results
 * Implemented via:
 
-  * `CompletableFuture`
-  * `parallelStream`
-  * Fork/Join
+    * `CompletableFuture`
+    * `parallelStream`
+    * Fork/Join
 
 ---
 
@@ -79,3 +82,10 @@ java multithreading exercise:
 * Blocking vs non-blocking (`Future` vs `CompletableFuture`)
 * Shared state vs immutable/isolated computation
 * Performance vs readability (ForkJoin vs streams)
+
+---
+
+### Atomic Variables
+
+* Atomics are used for Compare-And-Swap (CAS) operations, which ensures the entire sequence happens as a single,
+  uninterruptible step. They are thread-safe, without using any Locks.

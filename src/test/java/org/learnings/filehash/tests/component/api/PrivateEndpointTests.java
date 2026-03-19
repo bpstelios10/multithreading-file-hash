@@ -1,5 +1,6 @@
 package org.learnings.filehash.tests.component.api;
 
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -27,7 +28,8 @@ public class PrivateEndpointTests {
     void getPrivateStatus() throws Exception {
         mockMvc.perform(get("/private/status"))
                 .andExpect(status().isOk())
-                .andExpect(content().string("OK"));
+                .andExpect(content().string(Matchers.containsString("\"status\": \"OK\",")))
+                .andExpect(content().string(Matchers.containsString("\"total requests\": \"")));
     }
 
     @Test
