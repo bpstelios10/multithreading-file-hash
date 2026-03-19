@@ -12,6 +12,8 @@ plugins {
     id 'jacoco'
 }
 
+apply plugin: 'io.spring.dependency-management'
+
 group = 'org.learnings'
 version = '1.0-SNAPSHOT'
 
@@ -21,17 +23,17 @@ repositories {
 }
 
 dependencies {
-    implementation "org.springframework.boot:spring-boot-starter-web:4.0.1"
-    implementation "org.springframework.boot:spring-boot-starter-actuator:4.0.1"
-    implementation "org.springframework.boot:spring-boot-starter-validation:4.0.1"
+    implementation "org.springframework.boot:spring-boot-starter-web"
+    implementation "org.springframework.boot:spring-boot-starter-actuator"
+    implementation "org.springframework.boot:spring-boot-starter-validation"
 
-    compileOnly 'org.projectlombok:lombok:1.18.42'
-    annotationProcessor 'org.projectlombok:lombok:1.18.42'
+    compileOnly 'org.projectlombok:lombok:1.18.44'
+    annotationProcessor 'org.projectlombok:lombok:1.18.44'
 
-    implementation 'io.micrometer:micrometer-registry-prometheus:1.16.1'
+    implementation 'io.micrometer:micrometer-registry-prometheus:1.16.4'
     implementation 'io.prometheus:simpleclient_hotspot:0.16.0'
 
-    testImplementation("org.springframework.boot:spring-boot-starter-webmvc-test:4.0.1")
+    testImplementation("org.springframework.boot:spring-boot-starter-webmvc-test")
     test.useJUnitPlatform()
 }
 
