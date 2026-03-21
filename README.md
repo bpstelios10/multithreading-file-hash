@@ -115,7 +115,36 @@ Most common locks:
 
 ---
 
-### Atomic Variables
+### ⚡ Atomic Variables
 
 * Atomics are used for Compare-And-Swap (CAS) operations, which ensures the entire sequence happens as a single,
   uninterruptible step. They are thread-safe, without using any Locks.
+
+---
+
+### 🧠 BlockingQueue
+
+A `Queue` that additionally supports operations that wait for the queue to become non-empty when retrieving an element.
+`put()` method blocks the current thread indefinitely until the operation can succeed.
+`BlockingQueue` implementations are thread-safe. All queuing methods achieve their effects atomically using internal
+locks or other forms of concurrency control.
+
+* **Backpressure** new LinkedBlockingQueue<>(100);
+
+  If workers are slow → producer blocks
+
+  If aggregator is slow → workers block
+
+  Natural flow control
+* **Pipeline Parallelism**
+
+  Reader, workers, aggregator all run concurrently
+
+  Different stages can scale independently
+* Coordination (Important!)
+
+  Poison pill pattern
+
+  Workers notify aggregator when done
+
+---

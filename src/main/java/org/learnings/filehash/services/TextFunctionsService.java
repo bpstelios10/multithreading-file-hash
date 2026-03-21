@@ -1,6 +1,7 @@
 package org.learnings.filehash.services;
 
 import lombok.extern.slf4j.Slf4j;
+import org.jspecify.annotations.Nullable;
 import org.learnings.filehash.model.Text;
 import org.springframework.stereotype.Component;
 
@@ -23,6 +24,12 @@ import java.util.concurrent.atomic.LongAdder;
 @Slf4j
 @Component
 public class TextFunctionsService {
+
+    private final StringFrequencyPipeline stringFrequencyPipeline;
+
+    public TextFunctionsService(StringFrequencyPipeline stringFrequencyPipeline) {
+        this.stringFrequencyPipeline = stringFrequencyPipeline;
+    }
 
     public Map<Integer, String> extractSentencesHashes(Text text) {
         String[] sentences = text.getSentences();
@@ -96,24 +103,21 @@ public class TextFunctionsService {
 
     public String getMostCommonWord(Text text) {
         String[] sentences = text.getSentences();
-        Map.Entry<String, Integer> mostCommon;
+        Map<String, Integer> frequencies;
 
         try (ForkJoinPool pool = new ForkJoinPool()) {
-            WordFrequencyTask task =
-                    new WordFrequencyTask(sentences, 0, sentences.length);
+            WordFrequencyTask task = new WordFrequencyTask(sentences, 0, sentences.length);
 
-            Map<String, Integer> frequencies = pool.invoke(task);
-
-            mostCommon =
-                    frequencies.entrySet()
-                            .stream()
-                            .max(Map.Entry.comparingByValue())
-                            .orElse(null);
-            if (mostCommon != null)
-                log.debug("most common word is [{}] with [{}] occurrences", mostCommon.getKey(), mostCommon.getValue());
+            frequencies = pool.invoke(task);
         }
 
-        return mostCommon == null ? null : mostCommon.getKey();
+        Map.Entry<String, Integer> mostCommon =
+                frequencies.entrySet()
+                        .stream()
+                        .max(Map.Entry.comparingByValue())
+                        .orElse(null);
+
+        return logAndGetEntryKey(mostCommon);
     }
 
     public String getMostCommonWordImproved(Text text) {
@@ -132,10 +136,7 @@ public class TextFunctionsService {
                         .max(Comparator.comparingLong(e -> e.getValue().sum()))
                         .orElse(null);
 
-        if (mostCommon != null)
-            log.debug("most common word is [{}] with [{}] occurrences", mostCommon.getKey(), mostCommon.getValue());
-
-        return mostCommon == null ? null : mostCommon.getKey();
+        return logAndGetEntryKey(mostCommon);
     }
 
     public String getMostCommonWordParallelStream(Text text) {
@@ -157,10 +158,13 @@ public class TextFunctionsService {
                         .max(Comparator.comparingLong(e -> e.getValue().sum()))
                         .orElse(null);
 
-        if (mostCommon != null)
-            log.debug("most common word is [{}] with [{}] occurrences", mostCommon.getKey(), mostCommon.getValue());
+        return logAndGetEntryKey(mostCommon);
+    }
 
-        return mostCommon == null ? null : mostCommon.getKey();
+    public int getFrequencyOf(Text text, String target) {
+        String[] sentences = text.getSentences();
+
+        return stringFrequencyPipeline.execute(sentences, target);
     }
 
     private static <K, V> Map<K, V> resolveFutures(Map<K, ? extends Future<V>> futures) {
@@ -183,5 +187,12 @@ public class TextFunctionsService {
         }
 
         return sentence.trim().split("\\s+").length;
+    }
+
+    private static @Nullable String logAndGetEntryKey(Map.Entry<String, ?> mostCommon) {
+        if (mostCommon != null)
+            log.debug("most common word is [{}] with [{}] occurrences", mostCommon.getKey(), mostCommon.getValue());
+
+        return mostCommon == null ? null : mostCommon.getKey();
     }
 }
