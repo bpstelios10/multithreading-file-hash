@@ -20,7 +20,7 @@ public class RequestsCounterFilter extends OncePerRequestFilter {
 
     @Getter
     private final AtomicLong totalRequestsReceived = new AtomicLong();
-    // this getter is eventually consistent. if we want 100% correct results we need either add a lock inside
+    // this getter might give back stale value. if we want 100% correct results we need either add a lock inside
     // the getter, or use volatile ( the lock flashes to main memory when it finishes. volatile says
     // always read from main memory. so no chance for inconsistency or race conditions! )
     @Getter

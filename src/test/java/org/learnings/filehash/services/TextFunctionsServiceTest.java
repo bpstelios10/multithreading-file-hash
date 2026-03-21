@@ -5,17 +5,26 @@ import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.read.ListAppender;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.learnings.filehash.model.Text;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Map;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.learnings.filehash.testutils.AssertionUtils.*;
+import static org.mockito.Mockito.when;
 
+@ExtendWith(MockitoExtension.class)
 class TextFunctionsServiceTest {
 
-    private final TextFunctionsService service = new TextFunctionsService();
+    @Mock
+    StringFrequencyPipeline stringFrequencyPipeline;
+    @InjectMocks
+    private TextFunctionsService service;
     private ListAppender<ILoggingEvent> textFunctionsServiceLogs;
 
     private static final String TEST_TEXT = """
@@ -110,5 +119,16 @@ class TextFunctionsServiceTest {
         String mostCommonWord = service.getMostCommonWordParallelStream(new Text(TEST_TEXT));
 
         assertThat(mostCommonWord).isEqualTo("of");
+    }
+
+    @Test
+    public void getFrequencyOf() {
+        Text text = new Text(TEST_TEXT);
+        String target = "Entire";
+        when(stringFrequencyPipeline.execute(text.getSentences(), target)).thenReturn(1);
+
+        int frequency = service.getFrequencyOf(text, target);
+
+        assertThat(frequency).isEqualTo(1);
     }
 }

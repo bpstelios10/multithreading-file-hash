@@ -51,7 +51,7 @@ jacocoTestCoverageVerification {
             element = 'BUNDLE'
             limit {
                 counter = 'COMPLEXITY'
-                minimum = 0.7
+                minimum = 0.85
             }
         }
     }
