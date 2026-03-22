@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta http-equiv="x-ua-compatible" content="IE=edge"/>
+<title>Test results - ServiceApplicationTest</title>
+<link href="../css/base-style.css" rel="stylesheet" type="text/css"/>
+<link href="../css/style.css" rel="stylesheet" type="text/css"/>
+<script src="../js/report.js" type="text/javascript"></script>
+</head>
+<body>
+<div id="content">
+<h1>ServiceApplicationTest</h1>
+<div class="breadcrumbs">
+<a href="../index.html">all</a> &gt; 
+<a href="../packages/org.learnings.filehash.html">org.learnings.filehash</a> &gt; ServiceApplicationTest</div>
+<div id="summary">
+<table>
+<tr>
+<td>
+<div class="summaryGroup">
+<table>
+<tr>
+<td>
+<div class="infoBox" id="tests">
+<div class="counter">1</div>
+<p>tests</p>
+</div>
+</td>
+<td>
+<div class="infoBox" id="failures">
+<div class="counter">0</div>
+<p>failures</p>
+</div>
+</td>
+<td>
+<div class="infoBox" id="ignored">
+<div class="counter">0</div>
+<p>ignored</p>
+</div>
+</td>
+<td>
+<div class="infoBox" id="duration">
+<div class="counter">0.830s</div>
+<p>duration</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</td>
+<td>
+<div class="infoBox success" id="successRate">
+<div class="percent">100%</div>
+<p>successful</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="tab-container">
+<ul class="tabLinks">
+<li>
+<a href="#">Tests</a>
+</li>
+<li>
+<a href="#">Standard output</a>
+</li>
+<li>
+<a href="#">Standard error</a>
+</li>
+</ul>
+<div class="tab">
+<h2>Tests</h2>
+<table>
+<thead>
+<tr>
+<th>Test</th>
+<th>Duration</th>
+<th>Result</th>
+</tr>
+</thead>
+<tr>
+<td class="success">contextLoads()</td>
+<td class="success">0.830s</td>
+<td class="success">passed</td>
+</tr>
+</table>
+</div>
+<div class="tab">
+<h2>Standard output</h2>
+<span class="code">
+<pre id="class-stdout">15:00:54,176 |-INFO in ch.qos.logback.classic.LoggerContext[default] - Found logback-core version 1.5.32
+15:00:54,179 |-INFO in ch.qos.logback.classic.util.ContextInitializer@3e33b52e - Here is a list of configurators discovered as a service, by rank: 
+15:00:54,179 |-INFO in ch.qos.logback.classic.util.ContextInitializer@3e33b52e -   org.springframework.boot.logging.logback.RootLogLevelConfigurator
+15:00:54,179 |-INFO in ch.qos.logback.classic.util.ContextInitializer@3e33b52e - They will be invoked in order until ExecutionStatus.DO_NOT_INVOKE_NEXT_IF_ANY is returned.
+15:00:54,179 |-INFO in ch.qos.logback.classic.util.ContextInitializer@3e33b52e - Constructed configurator of type class org.springframework.boot.logging.logback.RootLogLevelConfigurator
+15:00:54,184 |-INFO in ch.qos.logback.classic.util.ContextInitializer@3e33b52e - org.springframework.boot.logging.logback.RootLogLevelConfigurator.configure() call lasted 0 milliseconds. ExecutionStatus=INVOKE_NEXT_IF_ANY
+15:00:54,184 |-INFO in ch.qos.logback.classic.util.ContextInitializer@3e33b52e - Trying to configure with ch.qos.logback.classic.util.DefaultJoranConfigurator
+15:00:54,186 |-INFO in ch.qos.logback.classic.util.ContextInitializer@3e33b52e - Constructed configurator of type class ch.qos.logback.classic.util.DefaultJoranConfigurator
+15:00:54,188 |-INFO in ch.qos.logback.classic.LoggerContext[default] - Found resource [logback-test.xml] at [file:/home/runner/work/multithreading-file-hash/multithreading-file-hash/build/resources/test/logback-test.xml]
+15:00:54,322 |-INFO in ch.qos.logback.classic.model.processor.ConfigurationModelHandlerFull - Scan attribute not set or set to unrecognized value.
+15:00:54,331 |-WARN in ch.qos.logback.core.model.processor.ImplicitModelHandler - Ignoring unknown property [springProfile] in [ch.qos.logback.classic.LoggerContext]
+15:00:54,342 |-INFO in ch.qos.logback.core.model.processor.AppenderModelHandler - Processing appender named [STDOUT]
+15:00:54,342 |-INFO in ch.qos.logback.core.model.processor.AppenderModelHandler - About to instantiate appender of type [ch.qos.logback.core.ConsoleAppender]
+15:00:54,350 |-INFO in ch.qos.logback.core.model.processor.ImplicitModelHandler - Assuming default type [ch.qos.logback.classic.encoder.PatternLayoutEncoder] for [encoder] property
+15:00:54,404 |-INFO in ch.qos.logback.core.ConsoleAppender[STDOUT] - NOTE: Writing to the console can be slow. Try to avoid logging to the 
+15:00:54,404 |-INFO in ch.qos.logback.core.ConsoleAppender[STDOUT] - console in production environments, especially in high volume systems.
+15:00:54,404 |-INFO in ch.qos.logback.core.ConsoleAppender[STDOUT] - See also https://logback.qos.ch/codes.html#slowConsole
+15:00:54,406 |-INFO in ch.qos.logback.classic.model.processor.LoggerModelHandler - Setting level of logger [org.learnings.filehash] to DEBUG
+15:00:54,406 |-INFO in ch.qos.logback.classic.model.processor.RootLoggerModelHandler - Setting level of ROOT logger to INFO
+15:00:54,407 |-INFO in ch.qos.logback.core.model.processor.AppenderRefModelHandler - Attaching appender named [STDOUT] to Logger[ROOT]
+15:00:54,408 |-INFO in ch.qos.logback.core.model.processor.DefaultProcessor@4c6a4ffd - End of configuration.
+15:00:54,410 |-INFO in ch.qos.logback.classic.joran.JoranConfigurator@3aed69dd - Registering current configuration as safe fallback point
+15:00:54,410 |-INFO in ch.qos.logback.classic.util.ContextInitializer@3e33b52e - ch.qos.logback.classic.util.DefaultJoranConfigurator.configure() call lasted 224 milliseconds. ExecutionStatus=DO_NOT_INVOKE_NEXT_IF_ANY
+
+22-03-2026 15:00:54.572 ?[35m[Test worker]?[0;39m ?[34mINFO ?[0;39m o.s.t.c.s.AnnotationConfigContextLoaderUtils.detectDefaultConfigurationClasses - Could not detect default configuration classes for test class [org.learnings.filehash.ServiceApplicationTest]: ServiceApplicationTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+22-03-2026 15:00:54.685 ?[35m[Test worker]?[0;39m ?[34mINFO ?[0;39m o.s.b.t.c.SpringBootTestContextBootstrapper.getOrFindConfigurationClasses - Found @SpringBootConfiguration org.learnings.filehash.ServiceApplication for test class org.learnings.filehash.ServiceApplicationTest
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v4.0.3)
+
+22-03-2026 15:00:55.323 ?[35m[Test worker]?[0;39m ?[34mINFO ?[0;39m o.l.filehash.ServiceApplicationTest.logStarting - Starting ServiceApplicationTest using Java 21.0.10 with PID 2430 (started by runner in /home/runner/work/multithreading-file-hash/multithreading-file-hash)
+22-03-2026 15:00:55.325 ?[35m[Test worker]?[0;39m ?[39mDEBUG?[0;39m o.l.filehash.ServiceApplicationTest.logStarting - Running with Spring Boot v4.0.3, Spring v7.0.5
+22-03-2026 15:00:55.326 ?[35m[Test worker]?[0;39m ?[34mINFO ?[0;39m o.l.filehash.ServiceApplicationTest.logStartupProfileInfo - No active profile set, falling back to 1 default profile: &quot;default&quot;
+22-03-2026 15:00:55.890 ?[35m[background-preinit]?[0;39m ?[34mINFO ?[0;39m o.h.validator.internal.util.Version.&lt;clinit&gt; - HV000001: Hibernate Validator 9.0.1.Final
+22-03-2026 15:00:57.670 ?[35m[Test worker]?[0;39m ?[34mINFO ?[0;39m o.l.filehash.ServiceApplicationTest.logStarted - Started ServiceApplicationTest in 2.782 seconds (process running for 5.111)
+</pre>
+<button class="clipboard-copy-btn" aria-label="Copy to clipboard" data-copy-element-id="class-stdout">Copy</button>
+</span>
+</div>
+<div class="tab">
+<h2>Standard error</h2>
+<span class="code">
+<pre id="class-stderr">Mockito is currently self-attaching to enable the inline-mock-maker. This will no longer work in future releases of the JDK. Please add Mockito as an agent to your build as described in Mockito's documentation: https://javadoc.io/doc/org.mockito/mockito-core/latest/org.mockito/org/mockito/Mockito.html#0.3
+WARNING: A Java agent has been loaded dynamically (/home/runner/.gradle/caches/modules-2/files-2.1/net.bytebuddy/byte-buddy-agent/1.17.8/f09415827a71be7ed621c7bd02550678f28bc81c/byte-buddy-agent-1.17.8.jar)
+WARNING: If a serviceability tool is in use, please run with -XX:+EnableDynamicAgentLoading to hide this warning
+WARNING: If a serviceability tool is not in use, please run with -Djdk.instrument.traceUsage for more information
+WARNING: Dynamic loading of agents will be disallowed by default in a future release
+</pre>
+<button class="clipboard-copy-btn" aria-label="Copy to clipboard" data-copy-element-id="class-stderr">Copy</button>
+</span>
+</div>
+</div>
+<div id="footer">
+<p>
+<div>
+<label class="hidden" id="label-for-line-wrapping-toggle" for="line-wrapping-toggle">Wrap lines
+<input id="line-wrapping-toggle" type="checkbox" autocomplete="off"/>
+</label>
+</div>Generated by 
+<a href="https://www.gradle.org">Gradle 9.2.0</a> at Mar 22, 2026, 3:01:05 PM</p>
+</div>
+</div>
+</body>
+</html>
