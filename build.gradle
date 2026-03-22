@@ -48,6 +48,16 @@ jacocoTestReport {
         xml.required = true
         html.required = true
     }
+
+    afterEvaluate {
+        classDirectories.setFrom(files(classDirectories.files.collect {
+            fileTree(dir: it, exclude: [
+                    "**/ServiceApplication.class",
+                    "org/learnings/**/*DTO.*",
+                    "**/config/*"
+            ])
+        }))
+    }
 }
 
 jacocoTestCoverageVerification {
@@ -57,7 +67,7 @@ jacocoTestCoverageVerification {
             element = 'BUNDLE'
             limit {
                 counter = 'COMPLEXITY'
-                minimum = 0.85
+                minimum = 0.95
             }
         }
     }

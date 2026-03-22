@@ -87,6 +87,14 @@ class TextFunctionsServiceTest {
     }
 
     @Test
+    public void countWordsPerSentence_whenEmptyText() {
+        Map<Integer, Integer> wordsPerSentence = service.countWordsPerSentence(new Text(""));
+
+        assertThat(wordsPerSentence).hasSize(1);
+        assertThat(wordsPerSentence.get(0)).isEqualTo(0);
+    }
+
+    @Test
     public void countWords() {
         int worldsInText = service.countWords(new Text(TEST_TEXT));
 
@@ -105,6 +113,13 @@ class TextFunctionsServiceTest {
         String mostCommonWord = service.getMostCommonWord(new Text(TEST_TEXT));
 
         assertThat(mostCommonWord).isEqualTo("of");
+    }
+
+    @Test
+    public void getMostCommonWord_whenEmptyText() {
+        String mostCommonWord = service.getMostCommonWord(new Text(""));
+
+        assertThat(mostCommonWord).isEqualTo(null);
     }
 
     @Test
