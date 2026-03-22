@@ -16,6 +16,7 @@ permissions:
   contents: read
   pages: write
   id-token: write
+  actions: write
 
 jobs:
   build:
@@ -34,17 +35,41 @@ jobs:
     - name: Build with Gradle Wrapper
       run: ./gradlew build
 
-    - name: Setup Pages
-      uses: actions/configure-pages@v5
+#    - name: Setup Pages
+#      uses: actions/configure-pages@v5
+#
+#    - name: Upload Test Report
+#      uses: actions/upload-pages-artifact@v3
+#      with:
+#        path: 'build/reports/tests/test/'
+#
+#    - name: Deploy to GitHub Pages
+#      if: github.ref == 'refs/heads/main' # Only runs on the main branch
+#      id: deployment
+#      uses: actions/deploy-pages@v4
+    - name: Convert Reports to CTRF
+      if: always()
+      run: |
+        npx junit-to-ctrf "build/test-results/**/*.xml"
+        npx jacoco-to-ctrf "build/reports/jacoco/test/*.xml"
 
-    - name: Upload Test Report
-      uses: actions/upload-pages-artifact@v3
+    - name: Publish Test Report
+      uses: ctrf-io/github-test-reporter@v1
+      if: always()
       with:
-        path: 'build/reports/tests/test/'
-
-    - name: Deploy to GitHub Pages
-      id: deployment
-      uses: actions/deploy-pages@v4
+        report-path: 'ctrf/*.json'
+        summary-delta-report: true
+        insights-report: true
+        flaky-rate-report: true
+        fail-rate-report: true
+        slowest-report: true
+#
+#    - name: Add coverage to PR
+#      id: jacoco
+#      uses: madrapps/jacoco-report@v1.7.2
+#      with:
+#        paths: |
+#          ${{ github.workspace }}/**/build/reports/jacoco/test/jacocoTestReport.xml
 
   dependency-submission:
     runs-on: ubuntu-latest

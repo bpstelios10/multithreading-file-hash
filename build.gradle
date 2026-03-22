@@ -43,6 +43,12 @@ java {
 }
 
 check.dependsOn jacocoTestCoverageVerification
+jacocoTestReport {
+    reports {
+        xml.required = true
+        html.required = true
+    }
+}
 
 jacocoTestCoverageVerification {
     dependsOn jacocoTestReport
