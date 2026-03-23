@@ -1,5 +1,7 @@
 package org.learnings.filehash.services;
 
+import org.springframework.util.ObjectUtils;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.RecursiveTask;
@@ -27,6 +29,7 @@ public class WordFrequencyTask extends RecursiveTask<Map<String, Integer>> {
 
     @Override
     protected Map<String, Integer> compute() {
+        if (ObjectUtils.isEmpty(sentences)) return new HashMap<>();
         if (end - start <= THRESHOLD) {
             return computeDirectly();
         }

@@ -1,5 +1,7 @@
 package org.learnings.filehash.services;
 
+import org.springframework.util.ObjectUtils;
+
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.RecursiveAction;
 import java.util.concurrent.atomic.LongAdder;
@@ -28,6 +30,7 @@ public class WordFrequencyImprovedTask extends RecursiveAction {
 
     @Override
     protected void compute() {
+        if (ObjectUtils.isEmpty(sentences)) return;
         if (end - start <= THRESHOLD) {
             computeDirectly();
             return;
@@ -47,7 +50,6 @@ public class WordFrequencyImprovedTask extends RecursiveAction {
                     .split("\\W+");
 
             for (String w : words) {
-
                 if (w.isBlank()) continue;
 
                 freq.computeIfAbsent(w, k -> new LongAdder())

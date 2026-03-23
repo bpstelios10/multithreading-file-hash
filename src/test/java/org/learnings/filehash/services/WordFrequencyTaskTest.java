@@ -29,12 +29,11 @@ class WordFrequencyTaskTest {
 
     @Test
     @DisplayName("should count words directly when below threshold")
-    void testDirectComputation() {
+    void wordFrequencyTask_whenBelowThresholdAndCaseInsensitive_returnsCorrect() {
         String[] sentences = {
                 "Hello world hello",
                 "world Hello"
         };
-        // threshold is 10, and we have 2 elements → direct
         WordFrequencyTask task = new WordFrequencyTask(sentences, 0, sentences.length);
 
         Map<String, Integer> result = pool.invoke(task);
@@ -46,14 +45,14 @@ class WordFrequencyTaskTest {
 
     @Test
     @DisplayName("should correctly merge results when splitting ranges")
-    void testRecursiveSplit() {
+    void wordFrequencyTask_whenAboveThresholdAndTaskSplits_returnsCorrect() {
+        // range forces a split (end - start > threshold)
         String[] sentences = {
                 "foo bar",   // index 0
                 "bar baz",   // index 1
                 "baz foo",   // index 2
                 "foo foo"    // index 3
         };
-        // set a range that forces a split (end - start > threshold)
         WordFrequencyTask task = new WordFrequencyTask(sentences, 0, sentences.length);
 
         Map<String, Integer> result = pool.invoke(task);
@@ -64,8 +63,7 @@ class WordFrequencyTaskTest {
     }
 
     @Test
-    @DisplayName("empty input should produce empty map")
-    void testEmptyInput() {
+    void wordFrequencyTask_whenEmptyText_returnsEmpty() {
         WordFrequencyTask task = new WordFrequencyTask(new String[0], 0, 0);
         Map<String, Integer> result = pool.invoke(task);
 
@@ -73,9 +71,16 @@ class WordFrequencyTaskTest {
     }
 
     @Test
-    @DisplayName("words with punctuation should still split correctly")
-    void testPunctuationSplitting() {
-        String[] sentences = {"Hello, hello! world?"};
+    void wordFrequencyTask_whenNullText_returnsEmpty() {
+        WordFrequencyTask task = new WordFrequencyTask(null, 0, 0);
+        Map<String, Integer> result = pool.invoke(task);
+
+        assertThat(result).isEmpty();
+    }
+
+    @Test
+    void wordFrequencyTask_whenWordsWithPunctuationAndCaseInsensitive_returnsCorrect() {
+        String[] sentences = {"Hello, hello! world? wor!d wor!ld wor?ld"};
         WordFrequencyTask task = new WordFrequencyTask(sentences, 0, 1);
 
         Map<String, Integer> result = pool.invoke(task);
@@ -85,8 +90,7 @@ class WordFrequencyTaskTest {
     }
 
     @Test
-    @DisplayName("should correctly count words with many sentences and force recursion")
-    void testManySentencesRecursive() {
+    void wordFrequencyTask_whenAboveThresholdAndLargeText_returnsCorrect() {
         try (ForkJoinPool bigPool = new ForkJoinPool(8)) {
             // create 40 sentences: "word1 word2 word3"
             List<String> sentences = new ArrayList<>();
@@ -99,13 +103,11 @@ class WordFrequencyTaskTest {
 
             Map<String, Integer> result = bigPool.invoke(task);
 
-            // word1..word5 should each appear 8 times (40 sentences / 5 words)
+            assertThat(result).hasSize(5);
+            // word1...word5 should each appear 8 times (40 sentences / 5 words)
             for (int i = 1; i <= 5; i++) {
                 assertThat(result.get("word" + i)).isEqualTo(8);
             }
-
-            // sanity check: map size should be 5
-            assertThat(result).hasSize(5);
         }
     }
 }
