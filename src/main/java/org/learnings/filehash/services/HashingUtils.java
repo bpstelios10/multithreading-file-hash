@@ -23,7 +23,7 @@ public final class HashingUtils {
         try {
             return MessageDigest.getInstance(SECURITY_ALGORITHM);
         } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException(e); // Re-throw as unchecked exception
+            throw new RuntimeException(e);
         }
     });
 

@@ -2,7 +2,6 @@ package org.learnings.filehash.services;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -28,8 +27,7 @@ class WordFrequencyImprovedTaskTest {
     }
 
     @Test
-    @DisplayName("should count words directly when at or below threshold")
-    void testDirectComputationImproved() {
+    void wordFrequencyImprovedTask_whenBelowThresholdAndCaseInsensitive_returnsCorrect() {
         String[] sentences = {
                 "Hello world hello",
                 "world Hello"
@@ -45,8 +43,7 @@ class WordFrequencyImprovedTaskTest {
     }
 
     @Test
-    @DisplayName("empty input should produce empty map")
-    void testEmptyInputImproved() {
+    void wordFrequencyImprovedTask_whenEmptyText_returnsEmpty() {
         String[] sentences = new String[0];
         ConcurrentHashMap<String, LongAdder> freq = new ConcurrentHashMap<>();
         WordFrequencyImprovedTask task =
@@ -58,9 +55,20 @@ class WordFrequencyImprovedTaskTest {
     }
 
     @Test
-    @DisplayName("words with punctuation are split correctly")
-    void testPunctuationImproved() {
-        String[] sentences = {"Hello, hello! world?"};
+    void wordFrequencyImprovedTask_whenNullText_returnsEmpty() {
+        String[] sentences = new String[0];
+        ConcurrentHashMap<String, LongAdder> freq = new ConcurrentHashMap<>();
+        WordFrequencyImprovedTask task =
+                new WordFrequencyImprovedTask(sentences, 0, sentences.length, freq);
+
+        pool.invoke(task);
+
+        assertThat(freq).isEmpty();
+    }
+
+    @Test
+    void wordFrequencyImprovedTask_whenWordsWithPunctuationAndCaseInsensitive_returnsCorrect() {
+        String[] sentences = {"Hello, hello! world? he!lo he??o"};
         ConcurrentHashMap<String, LongAdder> freq = new ConcurrentHashMap<>();
         WordFrequencyImprovedTask task =
                 new WordFrequencyImprovedTask(sentences, 0, 1, freq);
@@ -72,8 +80,7 @@ class WordFrequencyImprovedTaskTest {
     }
 
     @Test
-    @DisplayName("large list of sentences should count correctly and force recursion")
-    void testManySentencesRecursiveImproved() {
+    void wordFrequencyImprovedTask_whenAboveThresholdAndLargeText_returnsCorrect() {
         try (ForkJoinPool bigPool = new ForkJoinPool(8)) {
             List<String> sentences = new ArrayList<>();
             for (int i = 1; i <= 40; i++) {
@@ -88,12 +95,11 @@ class WordFrequencyImprovedTaskTest {
 
             bigPool.invoke(task);
 
+            assertThat(freq).hasSize(5);
             // each word "word1"..."word5" should appear 8 times
             for (int i = 1; i <= 5; i++) {
                 assertThat(freq.get("word" + i).intValue()).isEqualTo(8);
             }
-
-            assertThat(freq).hasSize(5);
         }
     }
 }
