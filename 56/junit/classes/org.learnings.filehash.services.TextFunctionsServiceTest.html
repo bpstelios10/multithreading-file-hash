@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta http-equiv="x-ua-compatible" content="IE=edge"/>
+<title>Test results - TextFunctionsServiceTest</title>
+<link href="../css/base-style.css" rel="stylesheet" type="text/css"/>
+<link href="../css/style.css" rel="stylesheet" type="text/css"/>
+<script src="../js/report.js" type="text/javascript"></script>
+</head>
+<body>
+<div id="content">
+<h1>TextFunctionsServiceTest</h1>
+<div class="breadcrumbs">
+<a href="../index.html">all</a> &gt; 
+<a href="../packages/org.learnings.filehash.services.html">org.learnings.filehash.services</a> &gt; TextFunctionsServiceTest</div>
+<div id="summary">
+<table>
+<tr>
+<td>
+<div class="summaryGroup">
+<table>
+<tr>
+<td>
+<div class="infoBox" id="tests">
+<div class="counter">14</div>
+<p>tests</p>
+</div>
+</td>
+<td>
+<div class="infoBox" id="failures">
+<div class="counter">0</div>
+<p>failures</p>
+</div>
+</td>
+<td>
+<div class="infoBox" id="ignored">
+<div class="counter">0</div>
+<p>ignored</p>
+</div>
+</td>
+<td>
+<div class="infoBox" id="duration">
+<div class="counter">0.271s</div>
+<p>duration</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</td>
+<td>
+<div class="infoBox success" id="successRate">
+<div class="percent">100%</div>
+<p>successful</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="tab-container">
+<ul class="tabLinks">
+<li>
+<a href="#">Tests</a>
+</li>
+<li>
+<a href="#">Standard output</a>
+</li>
+</ul>
+<div class="tab">
+<h2>Tests</h2>
+<table>
+<thead>
+<tr>
+<th>Test</th>
+<th>Method name</th>
+<th>Duration</th>
+<th>Result</th>
+</tr>
+</thead>
+<tr>
+<td class="success">countWords()</td>
+<td class="success">countWords()</td>
+<td class="success">0.010s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">[1] sentence = null</td>
+<td class="success">countWordsInSentence_whenEmptyInputs_returnsZero(String)[1]</td>
+<td class="success">0.120s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">[2] sentence = &quot;&quot;</td>
+<td class="success">countWordsInSentence_whenEmptyInputs_returnsZero(String)[2]</td>
+<td class="success">0.003s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">countWordsParallelStream()</td>
+<td class="success">countWordsParallelStream()</td>
+<td class="success">0.005s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">countWordsPerSentence()</td>
+<td class="success">countWordsPerSentence()</td>
+<td class="success">0.003s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">countWordsPerSentence_whenEmptyText()</td>
+<td class="success">countWordsPerSentence_whenEmptyText()</td>
+<td class="success">0.028s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">extractSentencesHashes_returnsIndexedSentencesHashes()</td>
+<td class="success">extractSentencesHashes_returnsIndexedSentencesHashes()</td>
+<td class="success">0.041s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">getFrequencyOf()</td>
+<td class="success">getFrequencyOf()</td>
+<td class="success">0.009s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">getMostCommonWord()</td>
+<td class="success">getMostCommonWord()</td>
+<td class="success">0.006s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">getMostCommonWordImproved()</td>
+<td class="success">getMostCommonWordImproved()</td>
+<td class="success">0.006s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">getMostCommonWordParallelStream()</td>
+<td class="success">getMostCommonWordParallelStream()</td>
+<td class="success">0.028s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">getMostCommonWord_whenEmptyText()</td>
+<td class="success">getMostCommonWord_whenEmptyText()</td>
+<td class="success">0.004s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">[1] cause = java.lang.InterruptedException: Custom interruption of thread</td>
+<td class="success">resolveFutures_whenThreadInterrupted_throwsRuntimeException(Throwable)[1]</td>
+<td class="success">0.004s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">[2] cause = java.util.concurrent.ExecutionException: java.lang.RuntimeException: fail task with execution exception</td>
+<td class="success">resolveFutures_whenThreadInterrupted_throwsRuntimeException(Throwable)[2]</td>
+<td class="success">0.004s</td>
+<td class="success">passed</td>
+</tr>
+</table>
+</div>
+<div class="tab">
+<h2>Standard output</h2>
+<span class="code">
+<pre id="class-stdout">24-03-2026 10:34:27.651 ?[35m[Test worker]?[0;39m ?[39mDEBUG?[0;39m o.l.f.services.TextFunctionsService.logAndGetEntryKey - most common word is [of] with [5] occurrences
+24-03-2026 10:34:27.720 ?[35m[Test worker]?[0;39m ?[39mDEBUG?[0;39m o.l.f.services.TextFunctionsService.logAndGetEntryKey - most common word is [of] with [5] occurrences
+24-03-2026 10:34:27.758 ?[35m[Test worker]?[0;39m ?[39mDEBUG?[0;39m o.l.f.services.TextFunctionsService.logAndGetEntryKey - most common word is [of] with [5] occurrences
+24-03-2026 10:34:27.766 ?[35m[pool-4-thread-2]?[0;39m ?[39mDEBUG?[0;39m o.l.filehash.services.HashingUtils.hashSentence - starting sentence digest computation, for sentence [If a clod be washed away by the sea,
+Europe is the less]
+24-03-2026 10:34:27.767 ?[35m[pool-4-thread-2]?[0;39m ?[39mDEBUG?[0;39m o.l.filehash.services.HashingUtils.hashSentence - lets see if MESSAGE_DIGEST is same inside the thread [pool-4-thread-2]: [826471761]
+24-03-2026 10:34:27.767 ?[35m[pool-4-thread-1]?[0;39m ?[39mDEBUG?[0;39m o.l.filehash.services.HashingUtils.hashSentence - starting sentence digest computation, for sentence [No man is an island,
+Entire of itself,
+Every man is a piece of the continent,
+A part of the main]
+24-03-2026 10:34:27.768 ?[35m[pool-4-thread-1]?[0;39m ?[39mDEBUG?[0;39m o.l.filehash.services.HashingUtils.hashSentence - lets see if MESSAGE_DIGEST is same inside the thread [pool-4-thread-1]: [1544331494]
+24-03-2026 10:34:27.768 ?[35m[pool-4-thread-2]?[0;39m ?[39mDEBUG?[0;39m o.l.filehash.services.HashingUtils.hashSentence - finished sentence digest computation
+24-03-2026 10:34:27.769 ?[35m[pool-4-thread-1]?[0;39m ?[39mDEBUG?[0;39m o.l.filehash.services.HashingUtils.hashSentence - finished sentence digest computation
+24-03-2026 10:34:27.769 ?[35m[pool-4-thread-2]?[0;39m ?[39mDEBUG?[0;39m o.l.filehash.services.HashingUtils.hashSentence - starting sentence digest computation, for sentence [As well as if a promontory were]
+24-03-2026 10:34:27.771 ?[35m[pool-4-thread-2]?[0;39m ?[39mDEBUG?[0;39m o.l.filehash.services.HashingUtils.hashSentence - lets see if MESSAGE_DIGEST is same inside the thread [pool-4-thread-2]: [826471761]
+24-03-2026 10:34:27.771 ?[35m[pool-4-thread-2]?[0;39m ?[39mDEBUG?[0;39m o.l.filehash.services.HashingUtils.hashSentence - finished sentence digest computation
+24-03-2026 10:34:27.769 ?[35m[pool-4-thread-1]?[0;39m ?[39mDEBUG?[0;39m o.l.filehash.services.HashingUtils.hashSentence - starting sentence digest computation, for sentence [As well as if a manor of thy friend’s
+Or of thine own were:
+Any man’s death diminishes me,
+Because I am involved in mankind,
+And therefore never send to know for whom the bell tolls;
+It tolls for thee]
+24-03-2026 10:34:27.772 ?[35m[pool-4-thread-1]?[0;39m ?[39mDEBUG?[0;39m o.l.filehash.services.HashingUtils.hashSentence - lets see if MESSAGE_DIGEST is same inside the thread [pool-4-thread-1]: [1544331494]
+24-03-2026 10:34:27.773 ?[35m[pool-4-thread-1]?[0;39m ?[39mDEBUG?[0;39m o.l.filehash.services.HashingUtils.hashSentence - finished sentence digest computation
+---- results of tests ----
+{0=1dfcea248091114a437e747de8a21e69a99e060b7768c033a4d5881ac73560da, 1=9cc4c653fdcb6f2eb0a03982675ec9187fc69687823e786fcb4088427dde1e2e, 2=ba3fe787b5f7466de1e0859ff85b70adbd216ab06c517623e6e03fd7a5fc2a64, 3=18088be579f248cd0d336f13a6b2dc0fd15b3b4d835529e1a6b3206e3fee7405}
+threadsNamesAndMessageDigestInstancesLogs: [1544331494, 826471761, pool-4-thread-1, pool-4-thread-2]
+</pre>
+<button class="clipboard-copy-btn" aria-label="Copy to clipboard" data-copy-element-id="class-stdout">Copy</button>
+</span>
+</div>
+</div>
+<div id="footer">
+<p>
+<div>
+<label class="hidden" id="label-for-line-wrapping-toggle" for="line-wrapping-toggle">Wrap lines
+<input id="line-wrapping-toggle" type="checkbox" autocomplete="off"/>
+</label>
+</div>Generated by 
+<a href="https://www.gradle.org">Gradle 9.2.0</a> at Mar 24, 2026, 10:34:33 AM</p>
+</div>
+</div>
+</body>
+</html>
