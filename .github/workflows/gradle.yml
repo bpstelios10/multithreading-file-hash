@@ -1,10 +1,11 @@
 # This workflow uses actions that are not certified by GitHub.
-# They are provided by a third-party and are governed by
-# separate terms of service, privacy policy, and support
-# documentation.
+# They are provided by a third-party and are governed by separate terms of service, privacy policy, and support documentation.
 # This workflow will build a Java project with Gradle and cache/restore any dependencies to improve the workflow execution time
 # For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-java-with-gradle
 name: multithreading-file-hash Pipeline
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 on:
   push:
@@ -25,35 +26,35 @@ jobs:
       pull-requests: write
 
     steps:
-    # Checkout the code and set up Java 21
-    - uses: actions/checkout@v4
+    ### Checkout the code and set up Java 21 ###
+    - uses: actions/checkout@v6
     - name: Set up JDK 21
-      uses: actions/setup-java@v4
+      uses: actions/setup-java@v5
       with:
         java-version: '21'
         distribution: 'temurin'
 
-    # Build using the gradle wrapper from the codebase
+    ### Build using the gradle wrapper from the codebase ###
     - name: Build with Gradle Wrapper
       run: ./gradlew build
 
-#    # Upload test reports as artifacts
-#    - name: Upload Test Reports Artifacts
-#      uses: actions/upload-artifact@v4
-#      with:
-#        name: test-reports
-#        path: |
-#          build/reports/tests/test
-#          build/reports/jacoco/test/html
+    #    # Upload test reports as artifacts
+    #    - name: Upload Test Reports Artifacts
+    #      uses: actions/upload-artifact@v4
+    #      with:
+    #        name: test-reports
+    #        path: |
+    #          build/reports/tests/test
+    #          build/reports/jacoco/test/html
 
-    # Publish the HTML reports of junit and Jacoco, to be accessible with links from build summary!
+    ### Publish the HTML reports of junit and Jacoco, to be accessible with links from build summary! ###
     - name: Prepare Combined Test+Jacoco Reports Folder
       run: |
         mkdir -p public/${{ github.run_number }}
         cp -r build/reports/tests/test public/${{ github.run_number }}/junit
         cp -r build/reports/jacoco/test/html public/${{ github.run_number }}/jacoco
     - name: Deploy Reports to Pages (+ keep history)
-      uses: peaceiris/actions-gh-pages@v3 # https://github.com/peaceiris/actions-gh-pages#readme
+      uses: peaceiris/actions-gh-pages@v4 # https://github.com/peaceiris/actions-gh-pages#readme
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         publish_dir: public
@@ -70,15 +71,20 @@ jobs:
       run: |
         npx junit-to-ctrf "build/test-results/**/*.xml"
     - name: Publish Test Report
-      uses: ctrf-io/github-test-reporter@v1 # https://github.com/ctrf-io/github-test-reporter
+      uses: ctrf-io/github-test-reporter@v1.0.27 # https://github.com/ctrf-io/github-test-reporter
       if: always()
       with:
         report-path: 'ctrf/*.json'
-        summary-delta-report: true
         insights-report: true
         flaky-rate-report: true
         fail-rate-report: true
         slowest-report: true
+        # next lines are for comparing with previous reports
+        upload-artifact: true
+        fetch-previous-results: true
+        summary-delta-report: true
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     # Add a comment in each PR with the coverage report. no checks are done here. checks for coverage are part of build
     - name: JaCoCo Report
@@ -111,9 +117,9 @@ jobs:
       contents: write
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
     - name: Set up JDK 21
-      uses: actions/setup-java@v4
+      uses: actions/setup-java@v5
       with:
         java-version: '21'
         distribution: 'temurin'
@@ -121,7 +127,7 @@ jobs:
     # Generates and submits a dependency graph, enabling Dependabot Alerts for all project dependencies.
     # See: https://github.com/gradle/actions/blob/main/dependency-submission/README.md
     - name: Generate and submit dependency graph
-      uses: gradle/actions/dependency-submission@af1da67850ed9a4cedd57bfd976089dd991e2582 # v4.0.0
+      uses: gradle/actions/dependency-submission@v5
       with:
         build-scan-publish: true
         build-scan-terms-of-use-url: "https://gradle.com/help/legal-terms-of-use"
