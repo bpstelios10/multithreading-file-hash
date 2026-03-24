@@ -7,10 +7,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.EmptySource;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.junit.jupiter.params.provider.NullSource;
 import org.learnings.filehash.model.Text;
+import org.learnings.filehash.services.mostcommonword.MostCommonWordService;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -25,13 +24,17 @@ import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.learnings.filehash.services.mostcommonword.MostCommonWordStrategy.StrategyType.*;
 import static org.learnings.filehash.testutils.AssertionUtils.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class TextFunctionsServiceTest {
 
+    @Mock
+    private WordCountService wordCountService;
+    @Mock
+    private MostCommonWordService mostCommonWordService;
     @Mock
     StringFrequencyPipeline stringFrequencyPipeline;
     @InjectMocks
@@ -88,63 +91,69 @@ class TextFunctionsServiceTest {
 
     @Test
     public void countWordsPerSentence() {
-        Map<Integer, Integer> wordsPerSentence = service.countWordsPerSentence(new Text(TEST_TEXT));
+        Map<Integer, Integer> expectedResult = new HashMap<>();
+        Text text = new Text(TEST_TEXT);
+        when(wordCountService.countWordsPerSentence(text)).thenReturn(expectedResult);
 
-        assertThat(wordsPerSentence).hasSize(4);
-        assertThat(wordsPerSentence.get(0)).isEqualTo(21);
-        assertThat(wordsPerSentence.get(1)).isEqualTo(13);
-        assertThat(wordsPerSentence.get(2)).isEqualTo(7);
-        assertThat(wordsPerSentence.get(3)).isEqualTo(40);
-    }
+        Map<Integer, Integer> result = service.countWordsPerSentence(text);
 
-    @Test
-    public void countWordsPerSentence_whenEmptyText() {
-        Map<Integer, Integer> wordsPerSentence = service.countWordsPerSentence(new Text(""));
-
-        assertThat(wordsPerSentence).hasSize(1);
-        assertThat(wordsPerSentence.get(0)).isEqualTo(0);
+        assertThat(expectedResult).isEqualTo(result);
+        verifyNoMoreInteractions(wordCountService, mostCommonWordService, stringFrequencyPipeline);
     }
 
     @Test
     public void countWords() {
-        int worldsInText = service.countWords(new Text(TEST_TEXT));
+        Text text = new Text(TEST_TEXT);
+        when(wordCountService.countWords(text)).thenReturn(81);
 
-        assertThat(worldsInText).isEqualTo(81);
+        int result = service.countWords(text);
+
+        assertThat(81).isEqualTo(result);
+        verifyNoMoreInteractions(wordCountService, mostCommonWordService, stringFrequencyPipeline);
     }
 
     @Test
     public void countWordsParallelStream() {
-        int worldsInText = service.countWordsParallelStream(new Text(TEST_TEXT));
+        Text text = new Text(TEST_TEXT);
+        when(wordCountService.countWordsParallelStream(text)).thenReturn(81);
 
-        assertThat(worldsInText).isEqualTo(81);
+        int result = service.countWordsParallelStream(text);
+
+        assertThat(81).isEqualTo(result);
+        verifyNoMoreInteractions(wordCountService, mostCommonWordService, stringFrequencyPipeline);
     }
 
     @Test
     public void getMostCommonWord() {
-        String mostCommonWord = service.getMostCommonWord(new Text(TEST_TEXT));
+        Text text = new Text(TEST_TEXT);
+        when(mostCommonWordService.getMostCommonWord(text, RECURSIVE_TASK)).thenReturn("of");
 
-        assertThat(mostCommonWord).isEqualTo("of");
-    }
+        String result = service.getMostCommonWord(text);
 
-    @Test
-    public void getMostCommonWord_whenEmptyText() {
-        String mostCommonWord = service.getMostCommonWord(new Text(""));
-
-        assertThat(mostCommonWord).isEqualTo(null);
+        assertThat("of").isEqualTo(result);
+        verifyNoMoreInteractions(wordCountService, mostCommonWordService, stringFrequencyPipeline);
     }
 
     @Test
     public void getMostCommonWordImproved() {
-        String mostCommonWord = service.getMostCommonWordImproved(new Text(TEST_TEXT));
+        Text text = new Text(TEST_TEXT);
+        when(mostCommonWordService.getMostCommonWord(text, RECURSIVE_ACTION)).thenReturn("of");
 
-        assertThat(mostCommonWord).isEqualTo("of");
+        String result = service.getMostCommonWordImproved(text);
+
+        assertThat("of").isEqualTo(result);
+        verifyNoMoreInteractions(wordCountService, mostCommonWordService, stringFrequencyPipeline);
     }
 
     @Test
     public void getMostCommonWordParallelStream() {
-        String mostCommonWord = service.getMostCommonWordParallelStream(new Text(TEST_TEXT));
+        Text text = new Text(TEST_TEXT);
+        when(mostCommonWordService.getMostCommonWord(text, PARALLEL_STREAM)).thenReturn("of");
 
-        assertThat(mostCommonWord).isEqualTo("of");
+        String result = service.getMostCommonWordParallelStream(text);
+
+        assertThat("of").isEqualTo(result);
+        verifyNoMoreInteractions(wordCountService, mostCommonWordService, stringFrequencyPipeline);
     }
 
     @Test
@@ -156,16 +165,6 @@ class TextFunctionsServiceTest {
         int frequency = service.getFrequencyOf(text, target);
 
         assertThat(frequency).isEqualTo(1);
-    }
-
-    @ParameterizedTest
-    @NullSource
-    @EmptySource
-    void countWordsInSentence_whenEmptyInputs_returnsZero(String sentence) {
-        Integer result =
-                ReflectionTestUtils.invokeMethod(TextFunctionsService.class, "countWordsInSentence", sentence);
-
-        assertThat(result).isEqualTo(0);
     }
 
     @ParameterizedTest
