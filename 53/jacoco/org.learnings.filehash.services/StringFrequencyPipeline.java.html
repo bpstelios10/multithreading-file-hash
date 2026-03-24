@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>StringFrequencyPipeline.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">multithreading-file-hash</a> &gt; <a href="index.source.html" class="el_package">org.learnings.filehash.services</a> &gt; <span class="el_source">StringFrequencyPipeline.java</span></div><h1>StringFrequencyPipeline.java</h1><pre class="source lang-java linenums">package org.learnings.filehash.services;
+
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+import org.springframework.stereotype.Component;
+
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.LinkedBlockingQueue;
+
+
+/**
+ * This is a parallel processing pipeline using BlockingQueue
+ * 1) the producer populates the sentences into one queue
+ * 2) the workers read from this queue, find the number of occurrences of a string
+ *    and put the result into a results BlockingQueue
+ * 3) the aggregator reads from the results queue, sums up and returns the total
+*/
+@Component
+public class StringFrequencyPipeline {
+    private static final String WORKER_POISON_PILL = &quot;__EOF__&quot;;
+    private static final int AGGREGATOR_POISON_PILL = -1;
+
+    private final ThreadPoolTaskExecutor executor;
+    private final int workers;
+
+<span class="fc" id="L27">    public StringFrequencyPipeline(ThreadPoolTaskExecutor stringFrequencyPipelineExecutor) {</span>
+<span class="fc" id="L28">        this.executor = stringFrequencyPipelineExecutor;</span>
+        // we need 1 thread for producer and 1 for aggregator. the rest can be workers
+<span class="fc" id="L30">        workers = executor.getMaxPoolSize() - 2;</span>
+<span class="fc" id="L31">    }</span>
+
+    public int execute(String[] sentences, String target) {
+<span class="fc" id="L34">        BlockingQueue&lt;String&gt; sentenceQueue = new LinkedBlockingQueue&lt;&gt;(100);</span>
+<span class="fc" id="L35">        BlockingQueue&lt;Integer&gt; resultQueue = new LinkedBlockingQueue&lt;&gt;(100);</span>
+        try {
+<span class="fc" id="L37">            executor.submit(createProducer(sentences, sentenceQueue));</span>
+
+<span class="fc bfc" id="L39" title="All 2 branches covered.">            for (int i = 0; i &lt; workers; i++) {</span>
+<span class="fc" id="L40">                executor.submit(createWorker(sentenceQueue, resultQueue, target));</span>
+            }
+
+<span class="fc" id="L43">            return executor.submit(createAggregator(resultQueue)).get();</span>
+<span class="fc" id="L44">        } catch (InterruptedException e) {</span>
+<span class="fc" id="L45">            Thread.currentThread().interrupt();</span>
+<span class="fc" id="L46">            throw new RuntimeException(e);</span>
+<span class="fc" id="L47">        } catch (ExecutionException e) {</span>
+<span class="fc" id="L48">            throw new RuntimeException(e);</span>
+        }
+    }
+
+    private Runnable createProducer(String[] sentences, BlockingQueue&lt;String&gt; queue) {
+<span class="fc" id="L53">        return () -&gt; {</span>
+            try {
+<span class="fc bfc" id="L55" title="All 2 branches covered.">                for (String sentence : sentences) {</span>
+<span class="fc" id="L56">                    queue.put(sentence);</span>
+                }
+
+<span class="fc bfc" id="L59" title="All 2 branches covered.">                for (int i = 0; i &lt; workers; i++) {</span>
+<span class="fc" id="L60">                    queue.put(WORKER_POISON_PILL);</span>
+                }
+<span class="fc" id="L62">            } catch (InterruptedException e) {</span>
+<span class="fc" id="L63">                Thread.currentThread().interrupt();</span>
+<span class="fc" id="L64">            }</span>
+<span class="fc" id="L65">        };</span>
+    }
+
+    private Runnable createWorker(BlockingQueue&lt;String&gt; sentenceQueue, BlockingQueue&lt;Integer&gt; resultQueue, String target) {
+<span class="fc" id="L69">        return () -&gt; {</span>
+            try {
+                while (true) {
+<span class="fc" id="L72">                    String sentence = sentenceQueue.take();</span>
+
+<span class="fc bfc" id="L74" title="All 2 branches covered.">                    if (sentence.equals(WORKER_POISON_PILL)) {</span>
+<span class="fc" id="L75">                        resultQueue.put(AGGREGATOR_POISON_PILL);</span>
+<span class="fc" id="L76">                        break;</span>
+                    }
+
+<span class="fc" id="L79">                    int count = countOccurrences(sentence, target);</span>
+
+<span class="fc" id="L81">                    resultQueue.put(count);</span>
+<span class="fc" id="L82">                }</span>
+<span class="fc" id="L83">            } catch (InterruptedException e) {</span>
+<span class="fc" id="L84">                Thread.currentThread().interrupt();</span>
+<span class="fc" id="L85">            }</span>
+<span class="fc" id="L86">        };</span>
+    }
+
+    private Callable&lt;Integer&gt; createAggregator(BlockingQueue&lt;Integer&gt; queue) {
+<span class="fc" id="L90">        return () -&gt; {</span>
+<span class="fc" id="L91">            int total = 0;</span>
+<span class="fc" id="L92">            int finishedWorkers = 0;</span>
+
+<span class="fc bfc" id="L94" title="All 2 branches covered.">            while (finishedWorkers &lt; workers) {</span>
+<span class="fc" id="L95">                int value = queue.take();</span>
+
+<span class="fc bfc" id="L97" title="All 2 branches covered.">                if (value == AGGREGATOR_POISON_PILL) {</span>
+<span class="fc" id="L98">                    finishedWorkers++;</span>
+<span class="fc" id="L99">                    continue;</span>
+                }
+
+<span class="fc" id="L102">                total += value;</span>
+<span class="fc" id="L103">            }</span>
+
+<span class="fc" id="L105">            return total;</span>
+        };
+    }
+
+    private static int countOccurrences(String text, String target) {
+<span class="fc" id="L110">        int count = 0;</span>
+<span class="fc" id="L111">        int index = 0;</span>
+
+<span class="fc bfc" id="L113" title="All 2 branches covered.">        while ((index = text.indexOf(target, index)) != -1) {</span>
+<span class="fc" id="L114">            count++;</span>
+<span class="fc" id="L115">            index += target.length();</span>
+        }
+
+<span class="fc" id="L118">        return count;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>
