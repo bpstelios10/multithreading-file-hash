@@ -7,10 +7,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
+import java.util.concurrent.*;
 
 import static org.learnings.filehash.services.mostcommonword.MostCommonWordStrategy.StrategyType.*;
 
@@ -68,7 +65,7 @@ public class TextFunctionsService {
         return mostCommonWordService.getMostCommonWord(text, PARALLEL_STREAM);
     }
 
-    public int getFrequencyOf(Text text, String target) {
+    public CompletableFuture<Integer> countOccurrences(Text text, String target) {
         String[] sentences = text.getSentences();
 
         return stringFrequencyPipeline.execute(sentences, target);

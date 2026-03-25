@@ -18,6 +18,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.stream.Stream;
@@ -157,14 +158,17 @@ class TextFunctionsServiceTest {
     }
 
     @Test
-    public void getFrequencyOf() {
+    public void countOccurrences() {
         Text text = new Text(TEST_TEXT);
         String target = "Entire";
-        when(stringFrequencyPipeline.execute(text.getSentences(), target)).thenReturn(1);
+        CompletableFuture<Integer> future = new CompletableFuture<>();
+        future.complete(1);
+        when(stringFrequencyPipeline.execute(text.getSentences(), target)).thenReturn(future);
 
-        int frequency = service.getFrequencyOf(text, target);
+        CompletableFuture<Integer> frequency = service.countOccurrences(text, target);
 
-        assertThat(frequency).isEqualTo(1);
+        assertThat(frequency).isNotCompletedExceptionally();
+        assertThat(frequency.join()).isEqualTo(1);
     }
 
     @ParameterizedTest

@@ -2,7 +2,6 @@ package org.learnings.filehash.services;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -10,12 +9,9 @@ import org.springframework.test.util.ReflectionTestUtils;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.*;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -26,50 +22,43 @@ class StringFrequencyPipelineTest {
     @ParameterizedTest
     @ValueSource(strings = {"Two words", "Two"})
     void countOccurrences_succeeds(String target) {
-        String[] input = {
-                "Two words hello world",
-                "Two words Two words test",
-                "nothing here two words",
-                "Two words appears again Two words"
-        };
+        String[] input = {"Two words hello world", "Two words Two words test",
+                "nothing here two words", "Two words appears again Two words"};
 
-        int result = pipeline.execute(input, target);
+        CompletableFuture<Integer> result = pipeline.execute(input, target);
 
-        assertThat(result).isEqualTo(5);
+        assertThat(result).isNotCompletedExceptionally();
+        assertThat(result.join()).isEqualTo(5);
     }
 
     @Test
     void countOccurrences_whenEmptySource_returnsZero() {
         String[] input = {};
 
-        int result = pipeline.execute(input, "anything");
+        CompletableFuture<Integer> result = pipeline.execute(input, "anything");
 
-        assertThat(result).isEqualTo(0);
+        assertThat(result).isNotCompletedExceptionally();
+        assertThat(result.join()).isEqualTo(0);
     }
 
     @Test
     void countOccurrences_whenNoMatch_returnsZero() {
-        String[] input = {
-                "hello world",
-                "nothing here",
-                "still nothing"
-        };
+        String[] input = {"hello world", "nothing here", "still nothing"};
 
-        int result = pipeline.execute(input, "anything");
+        CompletableFuture<Integer> result = pipeline.execute(input, "anything");
 
-        assertThat(result).isEqualTo(0);
+        assertThat(result).isNotCompletedExceptionally();
+        assertThat(result.join()).isEqualTo(0);
     }
 
     @Test
     void countOccurrences_whenSingleWorker_succeeds() {
-        String[] input = {
-                "X X X",
-                "X"
-        };
+        String[] input = {"X X X", "X"};
 
-        int result = pipeline.execute(input, "X");
+        CompletableFuture<Integer> result = pipeline.execute(input, "X");
 
-        assertThat(result).isEqualTo(4);
+        assertThat(result).isNotCompletedExceptionally();
+        assertThat(result.join()).isEqualTo(4);
     }
 
     @Test
@@ -78,39 +67,33 @@ class StringFrequencyPipelineTest {
         String[] input = new String[10_000];
         Arrays.fill(input, "X test X test");
 
-        int result = bigPipeline.execute(input, "X");
+        CompletableFuture<Integer> result = bigPipeline.execute(input, "X");
 
-        assertThat(result).isEqualTo(20_000);
+        assertThat(result).isNotCompletedExceptionally();
+        assertThat(result.join()).isEqualTo(20_000);
     }
 
     // Test race conditions
     @Test
     void countOccurrences_whenMultipleExecutions_producesSameResults() {
-        String[] input = {
-                "X X",
-                "X",
-                "nothing",
-                "X again X"
-        };
+        String[] input = {"X X", "X", "nothing", "X again X"};
 
         for (int i = 0; i < 20; i++) {
-            int result = pipeline.execute(input, "X");
+            CompletableFuture<Integer> result = pipeline.execute(input, "X");
 
-            assertThat(result).isEqualTo(5);
+            assertThat(result).isNotCompletedExceptionally();
+            assertThat(result.join()).isEqualTo(5);
         }
     }
 
     @Test
     void countOccurrences_whenSubstrings_succeeds() {
-        String[] input = {
-                "abc test abc",
-                "abcabc",
-                "nothing"
-        };
+        String[] input = {"abc test abc", "abcabc", "nothing"};
 
-        int result = pipeline.execute(input, "abc");
+        CompletableFuture<Integer> result = pipeline.execute(input, "abc");
 
-        assertThat(result).isEqualTo(4);
+        assertThat(result).isNotCompletedExceptionally();
+        assertThat(result.join()).isEqualTo(4);
     }
 
     @Test
@@ -119,34 +102,14 @@ class StringFrequencyPipelineTest {
             List<Callable<Integer>> tasks =
                     IntStream
                             .range(0, 20)
-                            .<Callable<Integer>>mapToObj(i -> () -> pipeline.execute(new String[]{"X X", "X"}, "X"))
-                            .collect(Collectors.toList());
+                            .<Callable<Integer>>mapToObj(i -> () -> pipeline.execute(new String[]{"X X", "X"}, "X").join())
+                            .toList();
 
             List<Future<Integer>> results = executor.invokeAll(tasks);
 
             for (Future<Integer> result : results) {
                 assertThat(result.get()).isEqualTo(3);
             }
-        }
-    }
-
-    @ParameterizedTest
-    @MethodSource("exceptionProvider")
-    @SuppressWarnings({"unchecked", "ResultOfMethodCallIgnored"})
-    void stringFrequencyPipeline_whenThreadInterrupted_throwsRuntimeException(Throwable cause) throws Exception {
-        ThreadPoolTaskExecutor faultyExecutor = mock(ThreadPoolTaskExecutor.class);
-        StringFrequencyPipeline faultyPipeline = new StringFrequencyPipeline(faultyExecutor);
-        Future<String> mockFuture = mock(Future.class);
-        when(faultyExecutor.submit(any(Callable.class))).thenReturn(mockFuture);
-        when(mockFuture.get()).thenThrow(cause);
-
-        assertThatThrownBy(() -> faultyPipeline.execute(new String[0], "nada"))
-                .isInstanceOf(RuntimeException.class)
-                .hasCause(cause)
-                .hasMessage(cause.toString());
-        if (cause instanceof InterruptedException) {
-            assertThat(Thread.currentThread().isInterrupted()).isTrue();
-            Thread.interrupted();
         }
     }
 
@@ -183,6 +146,27 @@ class StringFrequencyPipelineTest {
         Thread.interrupted();
     }
 
+    @Test
+    @SuppressWarnings({"unchecked", "ResultOfMethodCallIgnored"})
+    void createAggregator_whenThreadInterrupted_throwsRuntimeException() throws Exception {
+        CompletableFuture<Integer> mockFuture = mock(CompletableFuture.class);
+        BlockingQueue<String> faultyQueue = mock(BlockingQueue.class);
+        Throwable cause = new InterruptedException("Custom interruption of thread");
+        doThrow(cause).when(faultyQueue).take();
+
+        Runnable aggregatorResult = ReflectionTestUtils.invokeMethod(
+                pipeline, "createAggregator", faultyQueue, mockFuture);
+        assertThat(aggregatorResult).isNotNull();
+        aggregatorResult.run();
+
+        assertThat(Thread.currentThread().isInterrupted()).isTrue();
+        Thread.interrupted();
+        verify(mockFuture, times(0)).complete(any());
+        verify(mockFuture).completeExceptionally(cause);
+        verify(faultyQueue).take();
+        verifyNoMoreInteractions(mockFuture, faultyQueue);
+    }
+
     private ThreadPoolTaskExecutor createExecutor(int size) {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
 
@@ -193,12 +177,5 @@ class StringFrequencyPipelineTest {
         executor.initialize();
 
         return executor;
-    }
-
-    static Stream<Exception> exceptionProvider() {
-        return Stream.of(
-                new InterruptedException("Custom interruption of thread"),
-                new ExecutionException(new RuntimeException("fail task with execution exception"))
-        );
     }
 }
