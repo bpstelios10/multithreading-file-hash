@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>WordFrequencyImprovedTask.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">multithreading-file-hash</a> &gt; <a href="index.source.html" class="el_package">org.learnings.filehash.services</a> &gt; <span class="el_source">WordFrequencyImprovedTask.java</span></div><h1>WordFrequencyImprovedTask.java</h1><pre class="source lang-java linenums">package org.learnings.filehash.services;
+
+import org.springframework.util.ObjectUtils;
+
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.RecursiveAction;
+import java.util.concurrent.atomic.LongAdder;
+
+/*
+ * This is a good example of using ForkJoin for map-reduce. but it comes with some cons for this problem:
+ * 1 Creating many HashMaps - SOLVED with ConcurrentHashMap
+ * 2 Merging maps repeatedly (very expensive) - SOLVED with ConcurrentHashMap
+ * 3 Regex splitting (split(&quot;\\W+&quot;)) – surprisingly slow
+ * 4 Lots of temporary objects
+ */
+public class WordFrequencyImprovedTask extends RecursiveAction {
+    private static final int THRESHOLD = 10;
+
+    private final String[] sentences;
+    private final int start;
+    private final int end;
+    private final ConcurrentHashMap&lt;String, LongAdder&gt; freq;
+
+<span class="fc" id="L24">    public WordFrequencyImprovedTask(String[] sentences, int start, int end, ConcurrentHashMap&lt;String, LongAdder&gt; freq) {</span>
+<span class="fc" id="L25">        this.sentences = sentences;</span>
+<span class="fc" id="L26">        this.start = start;</span>
+<span class="fc" id="L27">        this.end = end;</span>
+<span class="fc" id="L28">        this.freq = freq;</span>
+<span class="fc" id="L29">    }</span>
+
+    @Override
+    protected void compute() {
+<span class="fc bfc" id="L33" title="All 2 branches covered.">        if (ObjectUtils.isEmpty(sentences)) return;</span>
+<span class="fc bfc" id="L34" title="All 2 branches covered.">        if (end - start &lt;= THRESHOLD) {</span>
+<span class="fc" id="L35">            computeDirectly();</span>
+<span class="fc" id="L36">            return;</span>
+        }
+
+<span class="fc" id="L39">        int mid = (start + end) / 2;</span>
+<span class="fc" id="L40">        WordFrequencyImprovedTask left = new WordFrequencyImprovedTask(sentences, start, mid, freq);</span>
+<span class="fc" id="L41">        WordFrequencyImprovedTask right = new WordFrequencyImprovedTask(sentences, mid, end, freq);</span>
+
+<span class="fc" id="L43">        invokeAll(left, right);</span>
+<span class="fc" id="L44">    }</span>
+
+    private void computeDirectly() {
+<span class="fc bfc" id="L47" title="All 2 branches covered.">        for (int i = start; i &lt; end; i++) {</span>
+<span class="fc" id="L48">            String[] words = sentences[i]</span>
+<span class="fc" id="L49">                    .toLowerCase()</span>
+<span class="fc" id="L50">                    .split(&quot;\\W+&quot;);</span>
+
+<span class="fc bfc" id="L52" title="All 2 branches covered.">            for (String w : words) {</span>
+<span class="fc bfc" id="L53" title="All 2 branches covered.">                if (w.isBlank()) continue;</span>
+
+<span class="fc" id="L55">                freq.computeIfAbsent(w, k -&gt; new LongAdder())</span>
+<span class="fc" id="L56">                        .increment();</span>
+            }
+        }
+<span class="fc" id="L59">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>
