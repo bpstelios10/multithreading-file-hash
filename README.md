@@ -148,3 +148,23 @@ locks or other forms of concurrency control.
   Workers notify aggregator when done
 
 ---
+
+### Controller returning CompletableFuture
+
+In Spring MVC:
+Request comes in → handled by a servlet thread
+If you return CompletableFuture (called Servlet async processing):
+Spring detaches the request → releases the thread → waits for completion in the background → resumes when done
+
+✅ Big win when:
+
+* your service does IO (DB, API calls, files)
+* you have many concurrent requests
+* tasks take noticeable time
+
+But with an important nuance:
+
+Tomcat itself is not “async” in the reactive sense. It uses the Servlet async API (Servlet 3.0+). So Tomcat is doing
+thread handoff, not non-blocking IO magic.
+
+---
