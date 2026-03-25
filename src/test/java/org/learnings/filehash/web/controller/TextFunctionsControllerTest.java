@@ -1,9 +1,5 @@
 package org.learnings.filehash.web.controller;
 
-import ch.qos.logback.classic.Level;
-import ch.qos.logback.classic.spi.ILoggingEvent;
-import ch.qos.logback.core.read.ListAppender;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.learnings.filehash.model.Text;
@@ -15,12 +11,11 @@ import org.springframework.http.ResponseEntity;
 
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.learnings.filehash.testutils.AssertionUtils.assertContainsInLogs;
-import static org.learnings.filehash.testutils.AssertionUtils.getListAppenderForClass;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.when;
-import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.springframework.http.HttpStatus.OK;
 
 @ExtendWith(MockitoExtension.class)
@@ -30,7 +25,6 @@ class TextFunctionsControllerTest {
     private TextFunctionsService service;
     @InjectMocks
     private TextFunctionsController controller;
-    private ListAppender<ILoggingEvent> textFunctionsControllerLogs;
 
     private final String text = """
             No man is an island,
@@ -46,11 +40,6 @@ class TextFunctionsControllerTest {
             Because I am involved in mankind,
             And therefore never send to know for whom the bell tolls;
             It tolls for thee.""";
-
-    @BeforeEach
-    void setUp() {
-        textFunctionsControllerLogs = getListAppenderForClass(TextFunctionsController.class);
-    }
 
     @Test
     void extractSentencesHashes() {
@@ -89,11 +78,10 @@ class TextFunctionsControllerTest {
 
         CompletableFuture<ResponseEntity<Integer>> resultFuture = controller.countOccurrences(requestBody, "target");
 
-        assertThat(resultFuture).isNotCompletedExceptionally();
-        ResponseEntity<?> result = resultFuture.join();
-        assertThat(result.getStatusCode()).isEqualTo(INTERNAL_SERVER_ERROR);
-        assertThat(result.getBody()).isNull();
-        assertContainsInLogs(textFunctionsControllerLogs,
-                "Error processing occurrences: [java.lang.RuntimeException: some exception]", Level.ERROR);
+        assertThat(resultFuture).isCompletedExceptionally();
+        assertThatThrownBy(resultFuture::join)
+                .isInstanceOf(CompletionException.class)
+                .hasCause(cause)
+                .hasMessage(cause.toString());
     }
 }

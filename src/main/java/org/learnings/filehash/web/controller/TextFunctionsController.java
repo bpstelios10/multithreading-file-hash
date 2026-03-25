@@ -30,14 +30,10 @@ public class TextFunctionsController {
 
     @PostMapping("/occurrences/{target}")
     public CompletableFuture<ResponseEntity<Integer>> countOccurrences(
-            @NotNull @RequestBody TextRequest requestBody,
-            @NotNull @PathVariable String target) {
-        return textFunctionsService.countOccurrences(requestBody.toText(), target)
-                .thenApply(ResponseEntity::ok)
-                .exceptionally(ex -> {
-                    log.error("Error processing occurrences: [{}]", ex.getMessage(), ex);
-                    return ResponseEntity.internalServerError().build();
-                });
+            @NotNull @RequestBody TextRequest requestBody, @NotNull @PathVariable String target) {
+        return textFunctionsService
+                .countOccurrences(requestBody.toText(), target)
+                .thenApply(ResponseEntity::ok);
     }
 
     public record TextRequest(String text) {

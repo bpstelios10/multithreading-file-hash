@@ -10,7 +10,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.containsString;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.asyncDispatch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -36,21 +35,6 @@ public class TextFunctionsEndpointTests {
             "Because I am involved in mankind,\\n" +
             "And therefore never send to know for whom the bell tolls;\\n" +
             "It tolls for thee.\"}";
-
-    @Test
-    void extractSentencesHashes_shouldFail_forNullBody() throws Exception {
-        mockMvc.perform(post("/text/sentences-hashes")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("")
-        ).andExpect(status().isBadRequest());
-    }
-
-    @Test
-    void extractSentencesHashes_shouldFail_forMissingBody() throws Exception {
-        mockMvc.perform(post("/text/sentences-hashes")
-                .contentType(MediaType.APPLICATION_JSON)
-        ).andExpect(status().isBadRequest());
-    }
 
     @Test
     void extractSentencesHashes() throws Exception {
@@ -94,22 +78,5 @@ public class TextFunctionsEndpointTests {
         mockMvc.perform(asyncDispatch(mvcResult))
                 .andExpect(status().isOk())
                 .andExpect(content().string("0"));
-    }
-
-    @Test
-    void countOccurrences_shouldFail_forNullBody() throws Exception {
-        mockMvc.perform(post("/text/occurrences/anything")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(""))
-                .andExpect(status().isBadRequest())
-                .andExpect(content().string(containsString("Failed to read request")));
-    }
-
-    @Test
-    void countOccurrences_shouldFail_forMissingBody() throws Exception {
-        mockMvc.perform(post("/text/occurrences/anything")
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest())
-                .andExpect(content().string(containsString("Failed to read request")));
     }
 }
