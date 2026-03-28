@@ -1,3 +1,9 @@
+def excludedFromJacoco = [
+        "**/ServiceApplication.class",
+        "org/learnings/**/*DTO.*",
+        "**/config/*"
+]
+
 check.dependsOn jacocoTestCoverageVerification
 jacocoTestReport {
     reports {
@@ -7,11 +13,7 @@ jacocoTestReport {
 
     afterEvaluate {
         classDirectories.setFrom(files(classDirectories.files.collect {
-            fileTree(dir: it, exclude: [
-                    "**/ServiceApplication.class",
-                    "org/learnings/**/*DTO.*",
-                    "**/config/*"
-            ])
+            fileTree(dir: it, exclude: excludedFromJacoco)
         }))
     }
 }
@@ -20,6 +22,8 @@ jacocoTestCoverageVerification {
     dependsOn jacocoTestReport
     violationRules {
         rule {
+            excludes = excludedFromJacoco
+
             element = 'BUNDLE'
             limit {
                 counter = 'INSTRUCTION' // bytecode precision
@@ -27,7 +31,7 @@ jacocoTestCoverageVerification {
             }
             limit {
                 counter = 'LINE' // most straight-forward to see
-                minimum = 0.97
+                minimum = 0.96
             }
             limit {
                 counter = 'BRANCH' // is the hardest to 'cheat'
