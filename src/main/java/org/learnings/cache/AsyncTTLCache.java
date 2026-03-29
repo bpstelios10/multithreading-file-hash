@@ -1,25 +1,27 @@
 package org.learnings.cache;
 
-import org.springframework.beans.factory.annotation.Qualifier;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executor;
 import java.util.function.Supplier;
 
+@Slf4j
 public class AsyncTTLCache<K, V> {
 
     private final ConcurrentHashMap<K, Entry<V>> cache;
     private final long ttlMillis;
     private final Executor executor;
 
-    public AsyncTTLCache(long ttlMillis, @Qualifier("cacheExecutor") Executor executor) {
+    public AsyncTTLCache(long ttlMillis, Executor executor) {
         this.cache = new ConcurrentHashMap<>();
         this.ttlMillis = ttlMillis;
         this.executor = executor;
     }
 
     public CompletableFuture<V> get(K key, Supplier<V> supplier) {
+        log.debug("Getting entry for key [{}]", key);
         long now = System.currentTimeMillis();
 
         Entry<V> entry = cache.compute(key, (k, existing) -> {

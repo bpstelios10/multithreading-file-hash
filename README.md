@@ -175,13 +175,12 @@ A concurrency-aware async cache that stores `key -> CompletableFuture<value>`. T
 should not recompute the same thing 3 times. Instead, the first thread computes the value and the rest reuse it, which
 is called **request coalescing** (used in Guava Cache, Caffeine, HTTP request deduplication layers, gateways, and more).
 
-A TTL cache with ConcurrentHashMap + CompletableFuture + computeIfAbsent is a perfect concurrency exercise. It combines:
+A TTL cache with `ConcurrentHashMap<?,CompletableFuture<?>>` combines:
 
 * lock-free concurrency
 * memoization
 * async coordination
 * duplicate-work suppression
 * expiration logic
-* safe publication
 
 ---
