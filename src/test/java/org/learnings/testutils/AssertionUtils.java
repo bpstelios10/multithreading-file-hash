@@ -1,4 +1,4 @@
-package org.learnings.filehash.testutils;
+package org.learnings.testutils;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
@@ -35,6 +35,15 @@ public class AssertionUtils {
                 .extracting(ILoggingEvent::getFormattedMessage)
                 .filteredOn(e -> e.startsWith(message))
                 .isNotEmpty();
+    }
+
+    public static void assertLogOccurrences(
+            ListAppender<ILoggingEvent> appender, String message, Level level, int occurrences) {
+        assertThat(appender.list)
+                .filteredOn(e -> e.getLevel() == level)
+                .extracting(ILoggingEvent::getFormattedMessage)
+                .filteredOn(e -> e.startsWith(message))
+                .hasSize(occurrences);
     }
 
     public static Set<String> getThreadsNamesAndMessageDigestInstancesLogs(
